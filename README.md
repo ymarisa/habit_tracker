@@ -56,4 +56,5 @@ Future: clicks will show summaries of results for day and habit instead of TEMP
 * Allow transition to other weeks
 * Calculate and show row/col summaries
 * Figure out a better way of spacing vertical labels other than line-height
+* Fix cell borders - make it space between or something instead
 
