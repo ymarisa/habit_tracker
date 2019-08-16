@@ -74,10 +74,12 @@ body {
     line-height: 350%;
 }
 
+/* keep habit labels at the right height compared to day labels*/
 .spacer-label {
     height: var(--header-row-height);
 }
 
+/* container for the habit summary labels that show on click of cell or label */
 .habit-summary-container {
     grid-column: 3;
     grid-row: 2;
@@ -127,6 +129,7 @@ body {
     font-family: 'Roboto', sans-serif;
     font-weight: 900;
     text-align: center;
+    padding-top: 8px;
 }
 
 .complete, .incomplete, .day-off {
