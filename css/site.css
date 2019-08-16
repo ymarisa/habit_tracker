@@ -55,6 +55,7 @@ body {
     text-align: center;
 }
 
+/*habit label container*/
 .labels {
     grid-column: 1;
     grid-row: 2;
@@ -98,7 +99,6 @@ body {
     grid-row: 2;
     display: flex;
     flex-direction: column;
-    /*margin-top:*/
 }
 
 .padding-bottom {
@@ -116,6 +116,7 @@ body {
     text-align: center;
 }
 
+/* extra layer of border around the outside of grid to make up for side-by-side borders on the inside */
 .habit-grid {
     border: 1px solid var(--my-grey);
 }
