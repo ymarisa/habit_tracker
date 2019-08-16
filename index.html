@@ -103,40 +103,6 @@
             <span class="habit-summary"></span>
         </div>
     </div>
-    <script>
-        function showSummary(day, habitN) {
-            console.log("showSummary fn");
-            // get all the flexbox items for each summary
-            let habitSummaryNodes = document.querySelectorAll('.habit-summary');
-            let daySummaryNodes = document.querySelectorAll('.day-summary');
-
-            // note whether we are clicking again to toggle off
-            let habitToggle = false;
-            if (habitN != null) {
-                if (habitSummaryNodes[habitN].innerText !== "") {
-                    habitToggle = true;
-                }
-            }
-
-            let dayToggle = false;
-            if (day != null) {
-                if (daySummaryNodes[day].innerText !== "") {
-                    dayToggle = true;
-                }
-            }
-
-            // clear all results
-            habitSummaryNodes.forEach((item) => item.innerText = "");
-            daySummaryNodes.forEach((item) => item.innerText = "");
-
-            // show results
-            if (habitN !== null && !habitToggle) {
-                habitSummaryNodes[habitN].innerText = "TEMP";
-            }
-            if (day !== null && !dayToggle) {
-                daySummaryNodes[day].innerText = "TEMP";
-            }
-        }
-    </script>
+    <script src="./js/main.js"></script>
 </body>
 </html>
