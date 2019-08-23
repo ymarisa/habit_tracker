@@ -3,14 +3,14 @@
     --my-grey: #626262;
     --my-white: #EDf0f3;
     --my-dk-blue: #37495D;
-    --habit-1: #f7c4ca;
-    --striped-background-1: repeating-linear-gradient(-45deg, #f7c4ca, #f7c4ca 5px, #EDf0f3 5px, #EDf0f3 10px);
-    --habit-2: #d5a6b5;
-    --striped-background-2: repeating-linear-gradient(-45deg, #d5a6b5, #d5a6b5 5px, #EDf0f3 5px, #EDf0f3 10px);
-    --habit-3: #968da1;
-    --striped-background-3: repeating-linear-gradient(-45deg, #968da1, #968da1 5px, #EDf0f3 5px, #EDf0f3 10px);
-    --habit-4: #537289;
-    --striped-background-4: repeating-linear-gradient(-45deg, #537289, #537289 5px, #EDf0f3 5px, #EDf0f3 10px);
+    --habit-0: #f7c4ca;
+    --striped-background-0: repeating-linear-gradient(-45deg, #f7c4ca, #f7c4ca 5px, #EDf0f3 5px, #EDf0f3 10px);
+    --habit-1: #d5a6b5;
+    --striped-background-1: repeating-linear-gradient(-45deg, #d5a6b5, #d5a6b5 5px, #EDf0f3 5px, #EDf0f3 10px);
+    --habit-2: #968da1;
+    --striped-background-2: repeating-linear-gradient(-45deg, #968da1, #968da1 5px, #EDf0f3 5px, #EDf0f3 10px);
+    --habit-3: #537289;
+    --striped-background-3: repeating-linear-gradient(-45deg, #537289, #537289 5px, #EDf0f3 5px, #EDf0f3 10px);
 }
 
 h1, span {
@@ -142,7 +142,8 @@ body {
 }
 
 .complete:hover, .day-off:hover {
-    opacity: .4;
+    opacity: .4
+;
 }
 
 .partial {
