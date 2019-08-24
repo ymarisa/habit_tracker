@@ -1,12 +1,18 @@
-function render() {
+function fetchAndRender() {
+    fetch("./data/data.json")
+        .then(response => response.json())
+        .then(data => {
+            console.log("got the data");
+            console.log(data);
+            data.forEach((item) => {console.log(item.title);});
+            render(data);
+        });
+}
+
+function render(habitData) {
     console.log("rendering!");
 
-    let habitData = [
-        {score: [6, 8, 6, 8, 8, 7, 7], type: 'number', title: "Sleep / 8 hrs", wGoal: 7, dGoal: 8},    // sleep
-        {score: [0, -1, 1, 1, 1, -1, 1], type: 'boolean', title: "Cook at home", wGoal: 5, dGoal: 1},   // cook
-        {score: [1, 1, 1, 1, 1, 1, 1], type: 'boolean', title: "Medication", wGoal: 7, dGoal: 1},   // meds
-        {score: [1, 1, -1, 1, 1, 1, -1], type: 'boolean', title: "Exercise", wGoal: 5, dGoal: 1}    // exercise
-    ];
+    const nDays = 7;
 
     // Create habit labels
     let habitLabelDiv = document.querySelector('.labels');
@@ -16,7 +22,6 @@ function render() {
         span.textContent = habitData[i].title;
         span.onclick = () => {showSummary(null, i);};
         span.classList.add('habit-labels');
-        // console.log(span, i);
         habitLabelDiv.append(span);
     }
 
@@ -24,7 +29,7 @@ function render() {
     let dayNames = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
     let dayHeaderRow = document.querySelector('#dayHeader');
 
-    for (let i = 0; i < dayNames.length; i++) {
+    for (let i = 0; i < nDays; i++) {
         let span = document.createElement('span');
         span.textContent = dayNames[i];
         span.onclick = () => {showSummary(i, null);};
@@ -32,32 +37,20 @@ function render() {
     }
 
     // Create date row
-    let dateValues = [1, 2, 3, 4, 5, 6, 7];
-    let dateStrings = dateValues.map(n => n < 10 ? '0' + n : '' + n);
-    let dateHeaderRow = document.querySelector('#dateHeader');
-
-    for (let i = 0; i < dateStrings.length; i++) {
-        let span = document.createElement('span');
-        span.textContent = dateStrings[i];
-        span.onclick = () => {
-            showSummary(i, null);
-        };
-        dateHeaderRow.append(span);
-    }
+    createDateRow(1, 7);
 
     // Create habit grid
-    createHabitGrid(habitData);
+    createHabitGrid(habitData, 0, nDays);
 
     // Create summary row
     let contentDiv = document.querySelector('.content');
     let daySummaryContainer = document.createElement('div');
     daySummaryContainer.classList.add("day-summary-container");
-    for (let i = 0; i < habitData[0].score.length; i++) {
+    for (let i = 0; i < nDays; i++) {
         let span = document.createElement('span');
         span.classList.add("day-summary");
         daySummaryContainer.append(span);
     }
-    // console.log(daySummaryContainer);
     contentDiv.append(daySummaryContainer);
 
     // Create summary col
@@ -67,37 +60,65 @@ function render() {
         span.classList.add("habit-summary");
         habitSummaryContainer.append(span);
     }
-    // console.log(habitSummaryContainer);
+
+    // Create picker
+    let pickerContainerDiv = document.querySelector(".picker-container");
+    createPicker(habitData, pickerContainerDiv, habitData.length);
 }
 
-function createHabitGrid(habitData) {
+function createDateRow(startN, nDays) {
+    let dateValues = Array.from(new Array(nDays), (x, i) => i + startN);
+    // let dateValues = [1, 2, 3, 4, 5, 6, 7];
+    let dateStrings = dateValues.map(n => n < 10 ? '0' + n : '' + n);
+
+    // create row, clear if already full
+    let dateHeaderRow = document.querySelector('#dateHeader');
+    while (dateHeaderRow.hasChildNodes()) {
+        dateHeaderRow.removeChild(dateHeaderRow.firstChild);
+    }
+
+    for (let i = 0; i < nDays; i++) {
+        let span = document.createElement('span');
+        span.textContent = dateStrings[i];
+        span.onclick = () => {
+            showSummary(i, null);
+        };
+        dateHeaderRow.append(span);
+    }
+}
+
+function createHabitGrid(habitData, startIndex, nDays) {
     let habitGrid = document.querySelector('.habit-grid');
+    while (habitGrid.hasChildNodes()) {
+
+        habitGrid.removeChild(habitGrid.firstChild);
+    }
 
     for (let i = 0; i < habitData.length; i++) {
         // Create habit row
         let habitRow = document.createElement('div');
         habitRow.classList.add("habit-row");
 
-        for (let j = 0; j < habitData[i].score.length; j++) {
+        for (let j = startIndex; j < (startIndex + nDays); j++) {
+
             // Create habit day cell
             let habitSpan = null;
             if (habitData[i].type === 'number') {
-                // console.log(j, i, habitData[i].score[j], habitData[i].dGoal);
                 habitSpan = createNumericCell(j, i, habitData[i].score[j], habitData[i].dGoal);
             } else {
-                // console.log(j, i, habitData[i].score[j]);
                 habitSpan = createBooleanCell(j, i, habitData[i].score[j]);
             }
+            // console.log("onclick: (day, habitN)", j % 7, i);
+            habitSpan.onclick = () => {showSummary(j % 7, i);};
             habitRow.append(habitSpan);
         }
-        console.log("########## Row!", habitRow);
         habitGrid.append(habitRow);
     }
 }
 
 function createBooleanCell(day, habitN, score) {
     let span = document.createElement('span');
-    span.onclick = () => {showSummary(day, habitN);};
+
     if (score === 0) {
         span.classList.add("incomplete");
     } else if (score < 0) {
@@ -113,7 +134,6 @@ function createBooleanCell(day, habitN, score) {
 function createNumericCell(day, habitN, score, dGoal) {
     let backgroundStyle = score >= 0 ? "var(--habit-" + habitN : "var(--striped-background-" + habitN;
     let span = document.createElement('span');
-    span.onclick = () => {showSummary(day, habitN);};
 
     if (score % dGoal === 0) {
         span.classList.add("complete");
@@ -128,6 +148,80 @@ function createNumericCell(day, habitN, score, dGoal) {
         span.append(innerSpan);
     }
     return(span)
+}
+
+function createPicker(habitData, pickerContainerDiv, nHabits) {
+    // find out the longest amount of records for all habits to get picker width
+    let nDays = habitData.map(x => x.score.length).reduce((a, b) => Math.max(a, b));
+
+    // get picker div
+    let pickerDiv = document.querySelector(".picker");
+    let weekArray = [];
+    for (let i = 0; i < nDays; i++) {
+        // for each day
+        let pickerColDiv = document.createElement('div');
+        pickerColDiv.classList.add("picker-col");
+        for (let j = 0; j < nHabits; j++) {
+            // for each habit
+            let pickerCellDiv = document.createElement('div');
+            pickerCellDiv.classList.add("picker-cell");
+            pickerCellDiv.onclick = () => {renderNewWeek(habitData, i, 7)}; //TODO: fix this to not be hard coded
+
+            // color square based on data
+            let cellScore = habitData[j].score[i];
+            if(cellScore < 0) {
+                pickerCellDiv.style.background = "var(--habit-" + j + ")";
+                pickerCellDiv.style.opacity = "0.4";
+                pickerCellDiv.style.border = "1px solid var(--habit-" + j + ")";
+            } else if (cellScore === 0) {
+                pickerCellDiv.style.background = "var(--my-white)";
+                pickerCellDiv.style.border = "1px solid var(--my-white)";
+            } else
+            {
+                pickerCellDiv.style.background = "var(--habit-" + j + ")";
+                pickerCellDiv.style.border = "1px solid var(--habit-" + j + ")";
+            }
+
+            pickerColDiv.append(pickerCellDiv);
+        }
+        weekArray.push(pickerColDiv);
+
+        // group 7 days into a week div
+        if (i % 7 === 6) {
+            let weekDiv = document.createElement('div');
+            weekDiv.classList.add("picker-week");
+            weekDiv.onmouseover = () => {onPickerMouseOver(Math.floor(i / 7))};
+            weekDiv.onmouseout = () => {onPickerMouseOut(Math.floor(i / 7))};
+
+            for (let col of weekArray) {
+                weekDiv.append(col);
+            }
+            weekArray = [];
+            pickerDiv.append(weekDiv);
+        }
+    }
+    pickerContainerDiv.append(pickerDiv);
+}
+
+function onPickerMouseOver(week) {
+    // console.log("MOUSEOVER: ", week);
+    let labelDivs = document.querySelectorAll(".picker-label");
+    labelDivs[week].innerHTML = "" + ((week * 7) + 1);
+    labelDivs[week + 1].innerHTML = "" + ((week + 1) * 7);
+}
+
+function onPickerMouseOut(week) {
+    // console.log("MOUSEOVER: ", week);
+    let labelDivs = document.querySelectorAll(".picker-label");
+    labelDivs[week].innerHTML = "";
+    labelDivs[week + 1].innerHTML = "";
+}
+
+function renderNewWeek(habitData, day, nDays) {
+    // create habit grid for the first of the week
+    let week = Math.floor(day / 7);
+    createDateRow((week*7) + 1, nDays);
+    createHabitGrid(habitData, (week*7), nDays); // TODO: when outline changes by day, change week*7 to day
 }
 
 function showSummary(day, habitN) {
@@ -184,5 +278,5 @@ function showSummary(day, habitN) {
     }
 }
 
-render();
+fetchAndRender();
 
